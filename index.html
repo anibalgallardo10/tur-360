@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Tours virtuales 360 para vender, alquilar y llenar espacios en Venezuela y Costa Rica.">
+<link rel="icon" href="img/logo.png">
+<link rel="canonical" href="https://tur-360.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tur-360.com/">
+<meta property="og:title" content="TUR 360 · Recorre antes de visitar">
+<meta property="og:description" content="Tours virtuales 360° profesionales en Caracas, Venezuela y Costa Rica. No vendemos fotos 360: vendemos visitas que ya decidieron.">
+<meta property="og:image" content="https://tur-360.com/img/eq_naranjos.jpg">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>TUR 360 · Tours virtuales 360° en Caracas y Costa Rica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;700;900&display=swap">
+<style>
+/* Layout: a dark "visor". The page opens inside a 360° scene; orbit rings from the TUR logo and thin wireframe solids are the recurring geometry. */
+:root{
+  --ink:#000000; --ink-2:#0E0D0B; --line:#2A2722;
+  --sand:#FFF8DE; --sand-dim:#BDB6A0; --sun:#FFBD59; --sun-deep:#E39A2C;
+  --f-display:"Montserrat","Noto Sans SC",system-ui,sans-serif;
+  --f-body:"Montserrat","Noto Sans SC",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --gut:clamp(16px,4vw,56px); --max:1240px;
+  color-scheme:dark;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--ink);color:var(--sand);font-family:var(--f-body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+*{box-sizing:border-box}
+a{color:inherit}
+em{font-style:normal;color:var(--sun)}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.015em}
+p{margin:0}
+.wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--gut);position:relative}
+.eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--sun)}
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:15px;letter-spacing:.02em;padding:15px 24px;border-radius:999px;text-decoration:none;border:2px solid var(--sun);transition:transform .2s,background .2s,color .2s;cursor:pointer;background:transparent;color:var(--sun);font-family:var(--f-body)}
+.btn.solid{background:var(--sun);color:var(--ink)}
+.btn:hover{transform:translateY(-2px)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.viewer:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+section{padding-block:clamp(64px,9vw,120px);position:relative;overflow-x:clip}
+.sec-head{display:grid;gap:18px;max-width:760px;margin-bottom:clamp(36px,5vw,60px);position:relative;z-index:1}
+.sec-head h2{font-size:clamp(32px,4.6vw,56px);font-weight:800;line-height:1.05}
+.sec-head p{color:var(--sand-dim);font-size:19px;max-width:62ch}
+
+/* ---------- cursor ---------- */
+.cur-dot,.cur-ring{position:fixed;left:0;top:0;pointer-events:none;z-index:200;border-radius:50%;opacity:0;transition:opacity .2s}
+.cur-dot{width:8px;height:8px;background:var(--sun);margin:-4px 0 0 -4px}
+.cur-ring{width:38px;height:38px;margin:-19px 0 0 -19px;border:1.5px solid var(--sun);display:flex;align-items:center;justify-content:center;transition:width .25s,height .25s,margin .25s,background .25s,opacity .2s,border-radius .25s}
+.cur-ring span{font:500 11px var(--f-mono);letter-spacing:.08em;color:var(--ink);opacity:0;transition:opacity .2s}
+.cur-ring.hover{width:64px;height:64px;margin:-32px 0 0 -32px;background:rgba(255,189,89,.12)}
+.cur-ring.drag{width:78px;height:78px;margin:-39px 0 0 -39px;background:var(--sun)}
+.cur-ring.drag span{opacity:1}
+@media (pointer:fine){
+  html.has-cursor,html.has-cursor a,html.has-cursor button,html.has-cursor label,html.has-cursor select,html.has-cursor .viewer,html.has-cursor summary,html.has-cursor input[type=range]{cursor:none}
+  html.has-cursor .cur-dot,html.has-cursor .cur-ring{opacity:1}
+}
+
+/* ---------- nav ---------- */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:24px;height:72px}
+.nav img{height:42px;width:auto;display:block}
+.nav ul{display:flex;gap:24px;list-style:none;margin:0 auto 0 20px;padding:0}
+.nav ul a{text-decoration:none;font-weight:600;font-size:14px;color:var(--sand-dim);transition:color .2s}
+.nav ul a:hover{color:var(--sand)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;flex:none}
+.lang button{background:none;border:0;color:var(--sand-dim);font:600 12px var(--f-mono);letter-spacing:.06em;padding:7px 10px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--sand);color:var(--ink)}
+.nav .btn{padding:10px 18px;font-size:13px;flex:none}
+@media (max-width:1060px){.nav ul{display:none}.nav .wrap{justify-content:space-between}}
+@media (max-width:620px){.nav .btn{display:none}}
+
+/* ---------- hero 360 ---------- */
+.hero{position:relative;border-bottom:1px solid var(--line)}
+.viewer{position:relative;height:clamp(460px,72vh,720px);background:#0b0a09 url("img/pano_sala.webp") repeat-x 0 50%/auto 100%;touch-action:none;user-select:none;overflow:hidden}
+.viewer canvas{display:block;width:100%;height:100%}
+.viewer .fade{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .3s;pointer-events:none}
+.viewer .fade.on{opacity:1}
+.hero-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.86) 0%,rgba(0,0,0,.5) 36%,rgba(0,0,0,0) 66%),linear-gradient(0deg,rgba(0,0,0,.6),transparent 30%)}
+.hero-copy{position:absolute;inset:0;z-index:2;display:flex;align-items:center;pointer-events:none}
+.hero-copy .wrap{width:100%}
+.hero-copy .inner{max-width:620px;display:grid;gap:22px}
+.hero-copy .ctas,.hero-copy a{pointer-events:auto}
+.hero h1{font-size:clamp(40px,6.2vw,80px);font-weight:900;line-height:.98}
+.hero .lead{font-size:clamp(17px,1.6vw,20px);opacity:.92;max-width:50ch}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.hud{position:absolute;z-index:3;left:0;right:0;bottom:18px;pointer-events:none}
+.hud .wrap{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.compass{display:flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--sand-dim);text-transform:uppercase}
+.compass svg{width:40px;height:40px;flex:none}
+.scenes{display:flex;gap:8px;pointer-events:auto;flex-wrap:wrap}
+.scenes button{font:600 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--sand);background:rgba(0,0,0,.55);border:1px solid var(--line);padding:9px 14px;border-radius:999px;cursor:pointer;backdrop-filter:blur(6px)}
+.scenes button[aria-pressed="true"]{border-color:var(--sun);color:var(--sun)}
+.zoom{display:flex;gap:6px}
+.zoom button{width:36px;height:36px;padding:0;justify-content:center;display:flex;align-items:center;font-size:18px}
+@media (max-width:760px){
+  .viewer{height:62vh;min-height:380px}
+  .hero-shade{background:linear-gradient(0deg,rgba(0,0,0,.65),transparent 40%)}
+  .hero-copy{position:static;display:block;padding-block:34px 44px;pointer-events:auto}
+  .hud{bottom:auto;top:calc(62vh - 70px)}
+  .hud .compass{display:none}
+}
+
+/* ---------- geometry ornaments ---------- */
+.orbit{position:absolute;pointer-events:none;width:min(560px,70vw);aspect-ratio:2.2/1;perspective:900px;z-index:0}
+.orbit svg{width:100%;height:100%;overflow:visible;transform:rotateX(var(--rx,58deg)) rotateY(var(--ry,0deg));transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.orbit .spin{transform-origin:50% 50%;animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gem{position:absolute;pointer-events:none;z-index:0}
+.gem canvas{width:100%;height:100%;display:block}
+.dots{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,248,222,.13) 1px,transparent 1.4px);background-size:26px 26px;-webkit-mask-image:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),#000 0%,transparent 75%);mask-image:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),#000 0%,transparent 75%)}
+
+/* ---------- logos ---------- */
+.logos{padding-block:44px;border-bottom:1px solid var(--line);overflow:hidden}
+.logos .label{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sand-dim);text-align:center;margin-bottom:26px}
+.marquee{display:flex;gap:28px;width:max-content;animation:slide 50s linear infinite}
+.logos:hover .marquee{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.lg{display:grid;justify-items:center;gap:10px;width:118px}
+.lg img{width:96px;height:96px;border-radius:50%;object-fit:cover;background:#fff;transition:transform .3s,box-shadow .3s;border:1px solid var(--line)}
+.lg:hover img{transform:translateY(-4px) scale(1.04);box-shadow:0 0 0 2px var(--sun)}
+.lg span{font:500 11px var(--f-mono);letter-spacing:.06em;color:var(--sand-dim);text-transform:uppercase;text-align:center;line-height:1.3}
+
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line)}
+.stat{padding:34px 24px;border-right:1px solid var(--line);display:grid;gap:6px}
+.stat:last-child{border-right:0}
+.stat b{font:900 clamp(38px,4.6vw,60px)/1 var(--f-display);color:var(--sun);font-variant-numeric:tabular-nums}
+.stat span{color:var(--sand-dim);font-size:15px}
+@media (max-width:760px){.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+
+/* ---------- pillars ---------- */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px);position:relative;z-index:1}
+.pillar{display:grid;gap:14px;align-content:start;padding-top:22px;border-top:2px solid var(--sun)}
+.pillar h3{font-size:24px;font-weight:800}
+.pillar p{color:var(--sand-dim)}
+.pillar small{font:500 12px var(--f-mono);color:var(--sand-dim);letter-spacing:.04em}
+@media (max-width:860px){.pillars{grid-template-columns:1fr}}
+
+/* ---------- tilt ---------- */
+[data-tilt]{transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.2,1);will-change:transform}
+
+/* ---------- industries ---------- */
+.inds{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;perspective:1200px}
+.ind{position:relative;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;border:1px solid var(--line);background:var(--ink-2);transition:border-color .3s}
+.ind:hover{border-color:var(--sun)}
+.ind .pic{position:relative;aspect-ratio:4/3;overflow:hidden}
+.ind img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.ind:hover img{transform:scale(1.06)}
+.ind div.t{padding:22px 24px 26px;display:grid;gap:8px}
+.ind h3{font-size:22px;font-weight:800;line-height:1.15}
+.ind p{font-size:15px;color:var(--sand-dim)}
+.ind .corner{position:absolute;top:14px;right:14px;width:34px;height:34px;background:rgba(0,0,0,.6);border:1.5px solid var(--sun);border-radius:50%;display:grid;place-items:center;color:var(--sun);font-size:16px}
+@media (max-width:900px){.inds{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.inds{grid-template-columns:1fr}}
+
+/* ---------- personalizacion ---------- */
+.brand{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(24px,4vw,56px);align-items:center}
+.demo{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:16/10;max-width:100%;border:1px solid var(--line)}
+.demo img{width:100%;height:100%;object-fit:cover;display:block}
+.hs{position:absolute;width:34px;height:34px;border-radius:50%;border:0;background:var(--sun);color:var(--ink);font:800 18px var(--f-display);cursor:pointer;transform:translate(-50%,-50%);box-shadow:0 0 0 0 rgba(255,189,89,.6);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 16px rgba(255,189,89,0)}100%{box-shadow:0 0 0 0 rgba(255,189,89,0)}}
+.hs-card{position:absolute;width:240px;max-width:70%;background:rgba(0,0,0,.86);border:1px solid var(--sun);border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.4;backdrop-filter:blur(6px);transform:translate(-50%,calc(-100% - 26px))}
+.hs-card b{display:block;color:var(--sun);font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.patch{position:absolute;left:50%;bottom:6%;width:120px;height:120px;transform:translateX(-50%) perspective(400px) rotateX(62deg);border-radius:50%;background:var(--ink);border:2px solid var(--sun);display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.patch img{width:70%;height:auto;transform:rotate(0deg)}
+.feat{display:grid;gap:22px}
+.feat > div{display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:start}
+.feat i{font-style:normal;width:44px;height:44px;border:1.5px solid var(--sun);border-radius:12px;display:grid;place-items:center;color:var(--sun);font:600 13px var(--f-mono);transform:rotate(45deg)}
+.feat i span{transform:rotate(-45deg)}
+.feat h3{font-size:19px;font-weight:800;margin-bottom:4px}
+.feat p{color:var(--sand-dim);font-size:16px}
+@media (max-width:860px){.brand{grid-template-columns:1fr}}
+
+/* ---------- cases ---------- */
+.cases{display:grid;gap:clamp(48px,7vw,90px)}
+.case{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;perspective:1400px}
+.case:nth-child(even) .media{order:2}
+.case .media{border-radius:20px;overflow:hidden;aspect-ratio:16/10;max-width:100%;position:relative;background:var(--ink-2);border:1px solid var(--line)}
+.case .media img{width:100%;height:100%;object-fit:cover;display:block}
+.pano{cursor:grab;touch-action:pan-y;user-select:none}
+.pano.drag{cursor:grabbing}
+.pano canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .5s}
+.pano.ready canvas{opacity:1}
+.pbadge{position:absolute;left:14px;top:14px;display:inline-flex;gap:8px;align-items:center;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);border:1px solid rgba(255,248,222,.18);padding:7px 12px;border-radius:99px;font:500 12px var(--f-mono);letter-spacing:.06em;color:var(--sand);pointer-events:none;transition:opacity .4s}
+.pbadge b{color:var(--sun);font-weight:700}
+.pano.used .pbadge{opacity:0}
+.pano:not([data-eq]){cursor:default}.pano:not([data-eq]) .pbadge{display:none}
+.pgo{position:absolute;right:14px;bottom:14px;background:var(--sun);color:var(--ink);font:800 14px var(--f-display);padding:10px 16px;border-radius:99px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.4);transition:transform .2s}
+.pgo:hover{transform:translateY(-2px)}
+.real{margin-top:14px;font-size:15px;color:var(--sand-dim)}
+.real .link{margin-left:6px}
+.case .txt{display:grid;gap:16px;min-width:0}
+.case h3{font-size:clamp(28px,3.2vw,40px);font-weight:800;line-height:1.08}
+.case p{color:var(--sand-dim)}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.meta span{font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);padding:6px 10px;border-radius:999px}
+.link{font-weight:700;color:var(--sun);text-decoration:none;display:inline-flex;gap:8px;align-items:center}
+.link:hover{text-decoration:underline}
+@media (max-width:860px){.case{grid-template-columns:1fr}.case:nth-child(even) .media{order:0}}
+.ba img{position:absolute;inset:0}
+.ba .top{clip-path:inset(0 calc(100% - var(--x,50%)) 0 0)}
+.ba .bar{position:absolute;top:0;bottom:0;left:var(--x,50%);width:3px;background:var(--sun);transform:translateX(-50%);pointer-events:none}
+.ba .bar::after{content:"⟷";position:absolute;top:50%;left:50%;width:48px;height:48px;border-radius:50%;background:var(--sun);color:var(--ink);display:grid;place-items:center;font-size:20px;transform:translate(-50%,-50%);box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:ew-resize}
+.ba .tagl,.ba .tagr{position:absolute;top:14px;font:800 12px var(--f-display);letter-spacing:.14em;background:rgba(0,0,0,.72);padding:7px 11px;border-radius:8px;pointer-events:none}
+.ba .tagl{left:14px;color:var(--sand)}.ba .tagr{right:14px;color:var(--sun)}
+
+/* ---------- services ---------- */
+.svc-wrap{position:relative}
+.svc{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative;z-index:1}
+.svc article{background:rgba(0,0,0,.92);padding:30px;display:grid;gap:12px;align-content:start;transition:background .3s}
+.svc article:hover{background:rgba(20,18,15,.92)}
+.svc .ic{font:500 13px var(--f-mono);color:var(--sun);letter-spacing:.1em}
+.svc h3{font-size:21px;font-weight:800}
+.svc p{color:var(--sand-dim);font-size:16px}
+@media (max-width:860px){.svc{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.svc{grid-template-columns:1fr}}
+
+/* ---------- process ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative}
+.steps::before{content:"";position:absolute;left:0;right:0;top:32px;border-top:1px dashed var(--line);z-index:-1}
+.step{display:grid;gap:12px;align-content:start}
+.step .n{width:64px;height:64px;border:1.5px solid var(--sun);border-radius:50%;display:grid;place-items:center;font:900 26px var(--f-display);color:var(--sun);background:var(--ink)}
+.step h3{font-size:20px;font-weight:800}
+.step p{color:var(--sand-dim);font-size:16px}
+.step .t{font:500 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--sun)}
+.footnote{margin-top:28px;font:400 13px var(--f-mono);color:var(--sand-dim);max-width:70ch}
+@media (max-width:860px){.steps{grid-template-columns:1fr 1fr}.steps::before{display:none}}
+@media (max-width:480px){.steps{grid-template-columns:1fr}}
+
+/* ---------- team ---------- */
+.team{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;perspective:1200px}
+.member{border:1px solid var(--line);border-radius:22px;padding:22px;display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center;background:var(--ink-2)}
+.photo{position:relative;width:150px;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#15130f 0 10px,#0e0d0b 10px 20px);border:1px dashed var(--sun);display:grid;place-items:center}
+.photo .ph{font:900 40px var(--f-display);color:var(--sun);display:grid;justify-items:center;gap:6px}
+.photo .ph small{font:500 10px var(--f-mono);letter-spacing:.1em;color:var(--sand-dim);text-transform:uppercase}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo:has(img){border:1px solid var(--line);background:#000}
+.member .where{font:500 12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--sun)}
+.member h3{font-size:26px;font-weight:800;margin:6px 0 2px}
+.member .role{font-weight:700;font-size:15px;margin-bottom:8px}
+.member p{color:var(--sand-dim);font-size:16px}
+@media (max-width:900px){.team{grid-template-columns:1fr}}
+@media (max-width:460px){.member{grid-template-columns:1fr}.photo{width:100%;max-width:220px}}
+
+/* ---------- faq ---------- */
+.faq{border-top:1px solid var(--line);max-width:900px}
+.faq details{border-bottom:1px solid var(--line);padding:22px 0}
+.faq summary{cursor:pointer;font-weight:700;font-size:19px;list-style:none;display:flex;justify-content:space-between;gap:20px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--sun);font-weight:400;font-size:28px;line-height:1;transition:transform .3s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq p{color:var(--sand-dim);margin-top:12px;max-width:68ch}
+
+/* ---------- contact form ---------- */
+.cta{position:relative;border:1px solid var(--line);border-radius:28px;padding:clamp(28px,5vw,64px);display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(28px,5vw,64px);background:var(--ink-2);overflow:hidden}
+.cta h2{font-size:clamp(34px,4.8vw,60px);font-weight:900;line-height:1}
+.cta .side{display:grid;gap:18px;align-content:start;position:relative;z-index:1}
+.cta .side p{color:var(--sand-dim);font-size:18px;max-width:42ch}
+.cta .mail{font:500 14px var(--f-mono);color:var(--sun);user-select:all;word-break:break-all}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px;position:relative;z-index:1}
+form .full{grid-column:1/-1}
+label{display:grid;gap:6px;font:500 12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--sand-dim)}
+input,select,textarea{font:500 16px var(--f-body);color:var(--sand);background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:13px 14px;width:100%;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--sun);outline:none}
+textarea{min-height:110px;resize:vertical}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.status{grid-column:1/-1;font-size:15px;border-radius:12px;padding:14px 16px;display:grid;gap:10px}
+.status.ok{background:rgba(255,189,89,.12);border:1px solid var(--sun)}
+.status.err{background:rgba(255,248,222,.06);border:1px solid var(--line)}
+.status pre{white-space:pre-wrap;font:400 13px var(--f-mono);color:var(--sand-dim);margin:0;max-height:160px;overflow:auto}
+@media (max-width:900px){.cta{grid-template-columns:1fr}}
+@media (max-width:520px){form{grid-template-columns:1fr}}
+
+footer{padding-block:48px;border-top:1px solid var(--line);margin-top:clamp(64px,9vw,120px)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+footer img{height:56px}
+footer .def{font-size:13px;color:var(--sand-dim);font-style:italic;max-width:46ch}
+footer .fine{font:400 12px var(--f-mono);color:var(--sand-dim);letter-spacing:.06em}
+
+html[lang="zh"] body{font-family:"Noto Sans SC",var(--f-body)}
+html[lang="zh"] .hero h1{letter-spacing:0;line-height:1.12}
+@media (prefers-reduced-motion:reduce){.marquee{animation:none;flex-wrap:wrap;justify-content:center;width:auto}.orbit .spin,.hs{animation:none}[data-tilt]{transition:none}html{scroll-behavior:auto}}
+</style>
+
+<div class="cur-dot" aria-hidden="true"></div><div class="cur-ring" aria-hidden="true"><span>360°</span></div>
+
+<nav class="nav" aria-label="Principal">
+  <div class="wrap">
+    <a href="#top" aria-label="TUR"><img src="img/logo.png" alt="TUR"></a>
+    <ul>
+      <li><a href="#trabajo" data-i18n="nav.work">Proyectos</a></li>
+      <li><a href="#industrias" data-i18n="nav.ind">Industrias</a></li>
+      <li><a href="#marca" data-i18n="nav.brand">Personalización</a></li>
+      <li><a href="#proceso" data-i18n="nav.proc">Proceso</a></li>
+      <li><a href="#equipo" data-i18n="nav.team">Equipo</a></li>
+    </ul>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+      <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+    </div>
+    <a class="btn solid" href="#contacto" data-i18n="cta.quote">Cotiza tu tour</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="viewer" id="viewer" tabindex="0" role="application" aria-label="Recorrido 360. Arrastra o usa las flechas para mirar en cualquier dirección."><div class="fade" id="fade"></div></div>
+  <div class="hero-shade"></div>
+  <div class="hero-copy">
+    <div class="wrap"><div class="inner">
+      <span class="eyebrow" data-i18n="hero.eyebrow">Tours virtuales 360 · Venezuela y Costa Rica</span>
+      <h1 data-i18n="hero.h1" data-html>Que te visiten <em>antes de abrir la puerta.</em></h1>
+      <p class="lead" data-i18n="hero.lead">Recorridos 360 para vender, alquilar y llenar espacios. Tu cliente camina el lugar desde su celular, esté donde esté, y te escribe cuando ya decidió que le gusta.</p>
+      <div class="ctas">
+        <a class="btn solid" href="#contacto" data-i18n="cta.quote">Cotiza tu tour</a>
+        <a class="btn" href="#trabajo" data-i18n="cta.work">Ver proyectos</a>
+      </div>
+    </div></div>
+  </div>
+  <div class="hud"><div class="wrap">
+    <div class="compass">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="#2A2722" stroke-width="2"/><g id="needle"><path d="M20 4 L24 20 L20 17.5 L16 20 Z" fill="#FFBD59"/></g></svg>
+      <div><div><span id="heading">000°</span> · <span id="pitch">+00°</span></div><div data-i18n="hud.drag">Arrastra en cualquier dirección</div></div>
+    </div>
+    <div class="scenes" role="group" aria-label="Escenas">
+      <button type="button" data-scene="0" aria-pressed="true" data-i18n="scene.0">Penthouse · Caracas</button>
+      <button type="button" data-scene="1" aria-pressed="false" data-i18n="scene.1">Frente al mar · Camurí</button>
+      <div class="zoom"><button type="button" id="zin" aria-label="Acercar">+</button><button type="button" id="zout" aria-label="Alejar">−</button></div>
+    </div>
+  </div></div>
+</header>
+
+<section class="logos" aria-labelledby="logos-label">
+  <p class="label" id="logos-label" data-i18n="logos.label">Marcas que ya se pueden recorrer con TUR</p>
+  <div class="marquee" id="marquee">
+    <div class="lg"><img src="logos/rentahouse.webp" alt="Rent-A-House"><span>Rent-A-House</span></div>
+    <div class="lg"><img src="logos/musa.webp" alt="MUSA Museo Subacuático de Arte"><span>MUSA</span></div>
+    <div class="lg"><img src="logos/eliteteam.webp" alt="Elite Team"><span>Elite Team</span></div>
+    <div class="lg"><img src="logos/blackout.webp" alt="Blackout"><span>Blackout</span></div>
+    <div class="lg"><img src="logos/lca.webp" alt="LCA Producciones"><span>LCA Producciones</span></div>
+    <div class="lg"><img src="logos/artesuave.webp" alt="Arte Suave"><span>Arte Suave</span></div>
+    <div class="lg"><img src="logos/balance.webp" alt="Balance Jiu-Jitsu"><span>Balance BJJ</span></div>
+    <div class="lg"><img src="logos/bujutsu.webp" alt="Bujutsu México"><span>Bujutsu</span></div>
+    <div class="lg"><img src="logos/playabjj.webp" alt="Playa BJJ"><span>Playa BJJ</span></div>
+    <div class="lg"><img src="logos/cocobarre.webp" alt="Coco Barre"><span>Coco Barre</span></div>
+    <div class="lg"><img src="logos/magicsteps.webp" alt="Magic Steps"><span>Magic Steps</span></div>
+    <div class="lg"><img src="logos/cityplaykids.webp" alt="City Play Kids"><span>City Play Kids</span></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="stats" aria-label="Cifras">
+    <div class="stat"><b data-count="27581">27.581</b><span data-i18n="stat.views">vistas en nuestros tours</span></div>
+    <div class="stat"><b data-count="21">21</b><span data-i18n="stat.spaces">espacios digitalizados</span></div>
+    <div class="stat"><b data-count="54">54</b><span data-i18n="stat.scenes">escenas en un solo recorrido</span></div>
+    <div class="stat"><b data-count="3">3</b><span data-i18n="stat.countries">países: Venezuela, Costa Rica y México</span></div>
+  </div>
+</div>
+
+<section id="promesa">
+  <div class="orbit" style="right:-60px;top:40px" data-orbit aria-hidden="true">
+    <svg viewBox="0 0 440 200"><g class="spin"><ellipse cx="220" cy="100" rx="210" ry="88" fill="none" stroke="#FFBD59" stroke-width="2" stroke-dasharray="560 80"/><path d="M372 30 l26 -6 -12 22 z" fill="#FFBD59"/></g><ellipse cx="220" cy="100" rx="150" ry="62" fill="none" stroke="#2A2722" stroke-width="1.5"/></svg>
+  </div>
+  <div class="gem" id="gem1" style="right:8%;top:120px;width:220px;height:220px" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="why.eyebrow">Por qué TUR</span>
+      <h2 data-i18n="why.h2" data-html>No vendemos fotos 360. <em>Vendemos visitas que ya decidieron.</em></h2>
+      <p data-i18n="why.p">Las plataformas te venden una cámara y las agencias de lujo cobran como agencias de lujo. Nosotros capturamos, producimos y personalizamos cada recorrido para que tu espacio se venda.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar"><span class="eyebrow">A</span><h3 data-i18n="p1.h">Producción profesional</h3><p data-i18n="p1.p">Captura 360 y producción audiovisual de un equipo que viene del cine y la arquitectura. Cada escena se ve como el espacio merece.</p></div>
+      <div class="pillar"><span class="eyebrow">B</span><h3 data-i18n="p2.h">Hecho para vender</h3><p data-i18n="p2.p">Tu contacto dentro del recorrido, publicación en Google Maps y un reel vertical listo para redes.</p></div>
+      <div class="pillar"><span class="eyebrow">C</span><h3 data-i18n="p3.h">Entrega rápida</h3><p data-i18n="p3.p">Un espacio estándar está listo en unas 72 horas. Los proyectos grandes toman más tiempo, según su envergadura.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="industrias" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="ind.eyebrow">Para quién</span>
+      <h2 data-i18n="ind.h2">Un tour distinto para cada negocio</h2>
+    </div>
+    <div class="inds">
+      <a class="ind" data-tilt href="https://kuula.co/share/collection/7b8KT" target="_blank" rel="noopener"><div class="pic"><img src="img/terraza.webp" alt="" loading="lazy"><span class="corner">↗</span></div><div class="t"><span class="eyebrow" data-i18n="i1.k">Inmobiliario</span><h3 data-i18n="i1.h">Vende a compradores que están lejos</h3><p data-i18n="i1.p">Agentes, inmobiliarias y desarrolladoras. El comprador recorre la propiedad antes de llamar.</p></div></a>
+      <a class="ind" data-tilt href="https://kuula.co/share/collection/7bG4P" target="_blank" rel="noopener"><div class="pic"><img src="img/mira.webp" alt="" loading="lazy"><span class="corner">↗</span></div><div class="t"><span class="eyebrow" data-i18n="i2.k">Hospitalidad</span><h3 data-i18n="i2.h">Huéspedes sin sorpresas</h3><p data-i18n="i2.p">Hoteles, posadas y alquiler vacacional. Más reservas, menos preguntas.</p></div></a>
+      <a class="ind" data-tilt href="https://kuula.co/share/collection/7bqXW" target="_blank" rel="noopener"><div class="pic"><img src="img/cafe.webp" alt="" loading="lazy"><span class="corner">↗</span></div><div class="t"><span class="eyebrow" data-i18n="i6.k">Cafés y emprendimientos</span><h3 data-i18n="i6.h">Tu local, abierto en tu web</h3><p data-i18n="i6.p">Cafés, tiendas y negocios que quieren mostrar su espacio en 360 en su página web y en Google.</p></div></a>
+      <a class="ind" data-tilt href="https://kuula.co/share/collection/7bhQk" target="_blank" rel="noopener"><div class="pic"><img src="img/blackout.webp" alt="" loading="lazy"><span class="corner">↗</span></div><div class="t"><span class="eyebrow" data-i18n="i3.k">Fitness y academias</span><h3 data-i18n="i3.h">Que conozcan tu box antes de ir</h3><p data-i18n="i3.p">Gimnasios, academias de artes marciales y estudios.</p></div></a>
+      <a class="ind" data-tilt href="https://kuula.co/share/collection/7TSJt" target="_blank" rel="noopener"><div class="pic"><img src="img/tb_obra.webp" alt="" loading="lazy"><span class="corner">↗</span></div><div class="t"><span class="eyebrow" data-i18n="i4.k">Obra y oficinas</span><h3 data-i18n="i4.h">Documenta cada fase</h3><p data-i18n="i4.p">El dueño recorre su obra desde donde esté.</p></div></a>
+      <a class="ind" data-tilt href="https://kuula.co/share/collection/7D3T3" target="_blank" rel="noopener"><div class="pic"><img src="img/musa.webp" alt="" loading="lazy"><span class="corner">↗</span></div><div class="t"><span class="eyebrow" data-i18n="i5.k">Turismo y cultura</span><h3 data-i18n="i5.h">Lleva tu destino al mundo</h3><p data-i18n="i5.p">Museos, atracciones y operadores turísticos.</p></div></a>
+    </div>
+  </div>
+</section>
+
+<section id="marca" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="br.eyebrow">Personalización y exclusividad</span>
+      <h2 data-i18n="br.h2" data-html>Tu tour, <em>con tu marca.</em></h2>
+      <p data-i18n="br.p">No usamos plantillas. Cada recorrido lleva tu identidad y cuenta los detalles que hacen único tu espacio. Toca los puntos de la imagen.</p>
+      <p class="real"><span data-i18n="br.real">Caso real: Quinta Los Naranjos, El Cafetal.</span> <a class="link" href="#trabajo" data-i18n="br.walk">Recórrela abajo ↓</a></p>
+    </div>
+    <div class="brand">
+      <div class="demo" id="demo" data-tilt>
+        <img src="img/naranjos_sala.webp" alt="Ejemplo de tour personalizado: sala de la quinta en Los Naranjos">
+        <button class="hs" style="left:72%;top:54%" data-card="hs1" aria-label="Detalle: jardín">+</button>
+        <button class="hs" style="left:34%;top:56%" data-card="hs2" aria-label="Detalle: espacio">+</button>
+        <div class="patch" aria-hidden="true"><img src="img/logo.png" alt=""></div>
+        <div class="hs-card" id="hs-card" style="left:72%;top:54%"><b data-i18n="hs1.k">Jardines internos</b><span data-i18n="hs1.p">Tres jardines internos que llenan de luz y verde cada nivel de la casa.</span></div>
+      </div>
+      <div class="feat">
+        <div><i><span>01</span></i><div><h3 data-i18n="f1.h">Tu logo en el recorrido</h3><p data-i18n="f1.p">En el piso de cada escena y en la portada del tour. Quien lo abre sabe de quién es.</p></div></div>
+        <div><i><span>02</span></i><div><h3 data-i18n="f2.h">Los detalles de tu espacio</h3><p data-i18n="f2.p">Puntos de información sobre materiales, equipos, vistas, menú o servicios, justo donde el visitante mira.</p></div></div>
+        <div><i><span>03</span></i><div><h3 data-i18n="f3.h">Íconos y estilo de tu marca</h3><p data-i18n="f3.p">Botones y señales con tu identidad para que el recorrido se sienta tuyo.</p></div></div>
+        <div><i><span>04</span></i><div><h3 data-i18n="f4.h">Exclusivo para ti</h3><p data-i18n="f4.p">Tu contacto, tu link y tu marca. El recorrido trabaja solo para tu negocio.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="trabajo" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="work.eyebrow">Proyectos</span>
+      <h2 data-i18n="work.h2">Recorre lo que hemos hecho</h2>
+    </div>
+    <div class="cases">
+      <article class="case">
+        <div class="media pano" data-tour="7MmQ3" data-eq="img/eq_naranjos.jpg" data-lon="0" data-lat="4"><img src="img/naranjos_jardin.webp" alt="Jardín interno de la quinta en Los Naranjos del Cafetal" loading="lazy"><span class="pbadge"><b>360°</b> <span data-i18n="pano.drag">Arrastra para mirar</span></span><a class="pgo" href="https://kuula.co/share/collection/7MmQ3" target="_blank" rel="noopener"><span data-i18n="pano.go">Recorrer completo</span> ↗</a></div>
+        <div class="txt">
+          <span class="eyebrow">Quinta Los Naranjos · El Cafetal</span>
+          <h3 data-i18n="c0.h">Una casa de tres niveles, recorrida de punta a punta</h3>
+          <p data-i18n="c0.p">Para la venta de una quinta en Los Naranjos del Cafetal. 54 escenas: fachada, sala, jardines internos, habitaciones y sótano con bar, conectados en un solo recorrido. El comprador llega a la visita sabiendo lo que quiere ver.</p>
+          <div class="meta"><span data-i18n="tag.res">Residencial</span><span>54 <span data-i18n="tag.scenes">escenas</span></span><span>Venezuela</span></div>
+          <a class="link" href="https://kuula.co/share/collection/7MmQ3" target="_blank" rel="noopener"><span data-i18n="cta.full">Recorrer el tour completo</span> ↗</a>
+        </div>
+      </article>
+      <article class="case">
+        <div class="media pano" data-tour="7b8KT" data-eq="img/eq_avilalto.jpg" data-lon="180" data-lat="-4"><img src="img/escalera.webp" alt="Escalera interior del penthouse Avilalto" loading="lazy"><span class="pbadge"><b>360°</b> <span data-i18n="pano.drag">Arrastra para mirar</span></span><a class="pgo" href="https://kuula.co/share/collection/7b8KT" target="_blank" rel="noopener"><span data-i18n="pano.go">Recorrer completo</span> ↗</a></div>
+        <div class="txt">
+          <span class="eyebrow">Avilalto · Caracas</span>
+          <h3 data-i18n="c1.h">Un penthouse completo en 44 escenas</h3>
+          <p data-i18n="c1.p">Para una agente de Rent-A-House. Varios niveles, terraza con vista, piscina y estacionamiento, todo conectado en un solo recorrido. El comprador entiende la propiedad antes de llamar.</p>
+          <div class="meta"><span data-i18n="tag.res">Residencial</span><span>44 <span data-i18n="tag.scenes">escenas</span></span><span>Venezuela</span></div>
+          <a class="link" href="https://kuula.co/share/collection/7b8KT" target="_blank" rel="noopener"><span data-i18n="cta.full">Recorrer el tour completo</span> ↗</a>
+        </div>
+      </article>
+      <article class="case">
+        <div class="media ba" id="ba" style="--x:50%">
+          <img src="img/tb_antes.webp" alt="Espacio principal de la oficina Torre Beta antes de la remodelación" loading="lazy">
+          <img class="top" src="img/tb_obra.webp" alt="El mismo espacio durante la primera fase de remodelación" loading="lazy">
+          <span class="tagl" data-i18n="ba.during">FASE 1</span><span class="tagr" data-i18n="ba.before">ANTES</span>
+          <div class="bar"></div>
+          <input type="range" id="ba-range" min="0" max="100" value="50" aria-label="Comparar antes y durante la obra">
+        </div>
+        <div class="txt">
+          <span class="eyebrow">Torre Beta · Los Ruices</span>
+          <h3 data-i18n="c2.h">El mismo espacio, antes y durante la obra</h3>
+          <p data-i18n="c2.p">El área principal de la oficina, desde el mismo punto de cámara: a la derecha cómo estaba, a la izquierda la primera fase de remodelación. Desliza para comparar. El propietario sigue la obra sin viajar.</p>
+          <div class="meta"><span data-i18n="tag.office">Oficinas</span><span data-i18n="tag.phases">2 fases</span><span>Venezuela</span></div>
+          <a class="link" href="https://kuula.co/share/collection/7TSX7" target="_blank" rel="noopener"><span data-i18n="cta.full">Recorrer el tour completo</span> ↗</a>
+        </div>
+      </article>
+      <article class="case">
+        <div class="media pano" data-tour="7D3T3" data-eq="img/eq_musa.jpg" data-lon="180" data-lat="-2"><img src="img/musa.webp" alt="Esculturas del Museo Subacuático de Arte en Cancún" loading="lazy"><span class="pbadge"><b>360°</b> <span data-i18n="pano.drag">Arrastra para mirar</span></span><a class="pgo" href="https://kuula.co/share/collection/7D3T3" target="_blank" rel="noopener"><span data-i18n="pano.go">Recorrer completo</span> ↗</a></div>
+        <div class="txt">
+          <span class="eyebrow">MUSA · Cancún</span>
+          <h3 data-i18n="c3.h">Un museo bajo el agua, abierto para todos</h3>
+          <p data-i18n="c3.p">21 escenas submarinas del Museo Subacuático de Arte. Quien no bucea también puede recorrerlo.</p>
+          <div class="meta"><span data-i18n="tag.tour">Turismo</span><span>21 <span data-i18n="tag.scenes">escenas</span></span><span>México</span></div>
+          <a class="link" href="https://kuula.co/share/collection/7D3T3" target="_blank" rel="noopener"><span data-i18n="cta.full">Recorrer el tour completo</span> ↗</a>
+        </div>
+      </article>
+      <article class="case">
+        <div class="media pano" data-tour="7bqXW" data-eq="img/eq_elite.jpg" data-lon="180" data-lat="-4"><img src="img/elite.webp" alt="Zona de entrenamiento de Elite Team en La Lagunita" loading="lazy"><span class="pbadge"><b>360°</b> <span data-i18n="pano.drag">Arrastra para mirar</span></span><a class="pgo" href="https://kuula.co/share/collection/7bqXW" target="_blank" rel="noopener"><span data-i18n="pano.go">Recorrer completo</span> ↗</a></div>
+        <div class="txt">
+          <span class="eyebrow">Elite Team · La Lagunita</span>
+          <h3 data-i18n="c4.h">Parecía un gimnasio pequeño. No lo era.</h3>
+          <p data-i18n="c4.p">20 escenas: zona de entrenamiento, cafetería y salón de baile. Ahora un miembro nuevo conoce todo antes de ir.</p>
+          <div class="meta"><span>Fitness</span><span>20 <span data-i18n="tag.scenes">escenas</span></span><span>Venezuela</span></div>
+          <a class="link" href="https://kuula.co/share/collection/7bqXW" target="_blank" rel="noopener"><span data-i18n="cta.full">Recorrer el tour completo</span> ↗</a>
+        </div>
+      </article>
+    </div>
+    <p style="margin-top:48px"><a class="btn" href="https://kuula.co/profile/GoraiLife/collections" target="_blank" rel="noopener" data-i18n="cta.all">Ver los 21 proyectos</a></p>
+  </div>
+</section>
+
+<section id="servicios" style="padding-top:0">
+  <div class="wrap svc-wrap" id="svcwrap">
+    <div class="dots" aria-hidden="true"></div>
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="svc.eyebrow">Qué incluye</span>
+      <h2 data-i18n="svc.h2">Todo lo que tu espacio necesita para que lo visiten en línea</h2>
+    </div>
+    <div class="svc">
+      <article><span class="ic">360°</span><h3 data-i18n="s1.h">Tour virtual completo</h3><p data-i18n="s1.p">Escenas conectadas, navegación fluida y tu contacto dentro del recorrido.</p></article>
+      <article><span class="ic">LOGO</span><h3 data-i18n="s2.h">Personalización con tu marca</h3><p data-i18n="s2.p">Tu logo, puntos de información con los detalles del espacio e íconos con tu estilo.</p></article>
+      <article><span class="ic">MAPS</span><h3 data-i18n="s3.h">Google Maps y Street View</h3><p data-i18n="s3.p">Tu recorrido en tu perfil de Google, donde la gente ya te está buscando.</p></article>
+      <article><span class="ic">9:16</span><h3 data-i18n="s4.h">Reel vertical</h3><p data-i18n="s4.p">Un video corto recorriendo el espacio, producido para redes sociales.</p></article>
+      <article><span class="ic">WEB · VR</span><h3 data-i18n="s5.h">Web y realidad virtual</h3><p data-i18n="s5.p">Insértalo en tu página, compártelo por link o míralo con lentes de realidad virtual.</p></article>
+      <article><span class="ic">HOST</span><h3 data-i18n="s6.h">Hosting incluido</h3><p data-i18n="s6.p">Tu tour en línea y listo para compartir durante el tiempo acordado.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="proceso" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="proc.eyebrow">Cómo trabajamos</span>
+      <h2 data-i18n="proc.h2">De tu puerta a tu web, en cuatro pasos</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><span class="t" data-i18n="st1.t">Primer contacto</span><h3 data-i18n="st1.h">Hablamos</h3><p data-i18n="st1.p">Nos cuentas qué espacio es y qué quieres lograr. Te damos un precio cerrado.</p></div>
+      <div class="step"><span class="n">2</span><span class="t" data-i18n="st2.t">En el lugar</span><h3 data-i18n="st2.h">Capturamos</h3><p data-i18n="st2.p">Vamos con cámara 360 y tomamos una escena cada pocos metros.</p></div>
+      <div class="step"><span class="n">3</span><span class="t" data-i18n="st3.t">Producción</span><h3 data-i18n="st3.h">Editamos y personalizamos</h3><p data-i18n="st3.p">Conectamos escenas, agregamos tu marca, los detalles del espacio y tu contacto.</p></div>
+      <div class="step"><span class="n">4</span><span class="t" data-i18n="st4.t">Entrega</span><h3 data-i18n="st4.h">Publicas</h3><p data-i18n="st4.p">Recibes el link, el reel y el código para tu web. Listo para compartir.</p></div>
+    </div>
+    <p class="footnote" data-i18n="proc.note">Un espacio estándar suele estar listo en unas 72 horas. El tiempo depende de la envergadura del tour: proyectos grandes o con muchas escenas toman más.</p>
+  </div>
+</section>
+
+<section id="equipo" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-i18n="team.eyebrow">Equipo</span>
+      <h2 data-i18n="team.h2">Dos cofundadores, dos países, un mismo estándar</h2>
+    </div>
+    <div class="team">
+      <div class="member" data-tilt>
+        <!-- Foto: guarda el archivo como team/andres-pena.jpg -->
+        <div class="photo"><div class="ph">AP<small data-i18n="team.photo">Foto</small></div><img src="team/andres-pena.jpg" alt="Andrés Peña" onerror="this.remove()"></div>
+        <div><span class="where">Costa Rica</span><h3>Andrés Peña</h3><div class="role" data-i18n="t1.role">Cofundador · Productor audiovisual</div><p data-i18n="t1.p">Lidera la producción audiovisual de TUR y los proyectos en Costa Rica.</p></div>
+      </div>
+      <div class="member" data-tilt>
+        <!-- Foto: guarda el archivo como team/anibal-gallardo.jpg -->
+        <div class="photo"><div class="ph">AG<small data-i18n="team.photo">Foto</small></div><img src="team/anibal-gallardo.jpg" alt="Aníbal Gallardo" onerror="this.remove()"></div>
+        <div><span class="where">Caracas · Venezuela</span><h3>Aníbal Gallardo</h3><div class="role" data-i18n="t2.role">Cofundador · Arquitecto</div><p data-i18n="t2.p">Lidera la captura y los proyectos en Venezuela.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow">FAQ</span><h2 data-i18n="faq.h2">Preguntas frecuentes</h2></div>
+    <div class="faq">
+      <details><summary data-i18n="q1">¿El cliente necesita instalar algo?</summary><p data-i18n="a1">No. El tour abre en cualquier navegador, en celular o computadora, con un link.</p></details>
+      <details><summary data-i18n="q2">¿Cuánto cuesta un tour?</summary><p data-i18n="a2">Depende del tamaño del espacio y del número de escenas. Escríbenos con los metros aproximados y la ubicación, y te enviamos un precio cerrado.</p></details>
+      <details><summary data-i18n="q5">¿Cuánto tarda la entrega?</summary><p data-i18n="a5">Un espacio estándar suele estar listo en unas 72 horas. Depende de la envergadura del tour: proyectos grandes o con muchas escenas toman más tiempo.</p></details>
+      <details><summary data-i18n="q3">¿Trabajan fuera de Caracas?</summary><p data-i18n="a3">Sí. Viajamos a cualquier ciudad de Venezuela y a cualquier lugar de Costa Rica. Para otros países, escríbenos.</p></details>
+      <details><summary data-i18n="q4">¿En qué se diferencia de un video?</summary><p data-i18n="a4">En un video ves lo que otro escogió mostrarte. En un tour tú decides a dónde mirar, vuelves cuando quieres y lo compartes con quien va a decidir contigo.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="contacto" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta">
+      <div class="gem" id="gem2" style="left:-40px;bottom:-60px;width:300px;height:300px;opacity:.55" aria-hidden="true"></div>
+      <div class="side">
+        <span class="eyebrow" data-i18n="ct.eyebrow">Contacto</span>
+        <h2 data-i18n="cta.h2">¿Qué espacio quieres abrir al mundo?</h2>
+        <p data-i18n="cta.p">Cuéntanos qué tienes y te respondemos por correo con una propuesta y un tour de ejemplo parecido al tuyo.</p>
+        <span class="mail">tur.acelerador@gmail.com</span>
+        <a class="link" href="https://www.instagram.com/tur___360/" target="_blank" rel="noopener">Instagram @tur___360 →</a>
+      </div>
+      <form id="lead" novalidate>
+        <label><span data-i18n="fm.name">Nombre</span><input id="f-name" name="nombre" autocomplete="name" required></label>
+        <label><span data-i18n="fm.email">Correo</span><input id="f-email" name="correo" type="email" autocomplete="email" required></label>
+        <label><span data-i18n="fm.phone">Teléfono (opcional)</span><input id="f-phone" name="telefono" type="tel" autocomplete="tel"></label>
+        <label><span data-i18n="fm.city">Ciudad y país</span><input id="f-city" name="ubicacion" autocomplete="address-level2"></label>
+        <label class="full"><span data-i18n="fm.type">Tipo de espacio</span>
+          <select id="f-type" name="tipo">
+            <option value="Inmobiliario" data-i18n="op.1">Inmobiliario</option>
+            <option value="Hospitalidad" data-i18n="op.2">Hotel, posada o alquiler vacacional</option>
+            <option value="Café o emprendimiento" data-i18n="op.3">Café o emprendimiento</option>
+            <option value="Fitness" data-i18n="op.4">Gimnasio o academia</option>
+            <option value="Oficina u obra" data-i18n="op.5">Oficina u obra</option>
+            <option value="Turismo y cultura" data-i18n="op.6">Turismo y cultura</option>
+            <option value="Otro" data-i18n="op.7">Otro</option>
+          </select></label>
+        <label class="full"><span data-i18n="fm.msg">Cuéntanos de tu espacio</span><textarea id="f-msg" name="mensaje" data-i18n-ph="fm.ph" placeholder="Metros aproximados, qué quieres lograr, fechas..."></textarea></label>
+        <div class="hp" aria-hidden="true"><label>No llenar<input id="f-honey" name="_honey" tabindex="-1" autocomplete="off"></label></div>
+        <div class="full"><button class="btn solid" type="submit" id="f-send" data-i18n="fm.send">Enviar solicitud</button></div>
+        <div class="status" id="f-status" hidden></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="img/logo.png" alt="TUR">
+    <p class="def" data-i18n="foot.def">TUR: viaje o excursión planeada para conocer uno o varios lugares.</p>
+    <p class="fine">CARACAS · COSTA RICA · © 2026 TUR</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const LEAD_EMAIL = "tur.acelerador@gmail.com";
+const I18N = {
+en:{"nav.work":"Projects","nav.ind":"Industries","nav.brand":"Branding","nav.proc":"Process","nav.team":"Team","cta.quote":"Get a quote","cta.work":"See projects",
+"hero.eyebrow":"360° virtual tours · Venezuela & Costa Rica","hero.h1":"Let them visit <em>before you open the door.</em>",
+"hero.lead":"360° tours that sell, rent and fill spaces. Your client walks the place from their phone, wherever they are, and reaches out once they already like it.",
+"hud.drag":"Drag in any direction","scene.0":"Penthouse · Caracas","scene.1":"Beachfront · Camurí","logos.label":"Brands you can already walk through with TUR",
+"stat.views":"views on our tours","stat.spaces":"spaces digitized","stat.scenes":"scenes in a single tour","stat.countries":"countries: Venezuela, Costa Rica and Mexico",
+"why.eyebrow":"Why TUR","why.h2":"We don't sell 360 photos. <em>We sell visits that have already decided.</em>","why.p":"Platforms sell you a camera and luxury agencies charge like luxury agencies. We capture, produce and customize every tour so your space sells.",
+"p1.h":"Professional production","p1.p":"360 capture and audiovisual production by a team with roots in film and architecture. Every scene looks the way the space deserves.",
+"p2.h":"Built to sell","p2.p":"Your contact inside the tour, publishing on Google Maps and a vertical reel ready for social media.",
+"p3.h":"Fast delivery","p3.p":"A standard space is ready in about 72 hours. Larger projects take longer, depending on their scope.",
+"ind.eyebrow":"Who it's for","ind.h2":"A different tour for every business","i1.k":"Real estate","i1.h":"Sell to buyers who are far away","i1.p":"Agents, brokerages and developers. Buyers walk the property before they call.",
+"i2.k":"Hospitality","i2.h":"Guests without surprises","i2.p":"Hotels, inns and vacation rentals. More bookings, fewer questions.",
+"i6.k":"Cafés & small businesses","i6.h":"Your venue, open on your website","i6.p":"Cafés, shops and businesses that want to show their space in 360 on their website and on Google.",
+"i3.k":"Fitness & academies","i3.h":"Let them see your box before they come","i3.p":"Gyms, martial arts academies and studios.","i4.k":"Construction & offices","i4.h":"Document every phase","i4.p":"Owners walk their site from anywhere.",
+"i5.k":"Tourism & culture","i5.h":"Take your destination to the world","i5.p":"Museums, attractions and tour operators.",
+"br.eyebrow":"Branding & exclusivity","br.h2":"Your tour, <em>your brand.</em>","br.p":"No templates. Every tour carries your identity and tells the details that make your space unique. Tap the points on the image.",
+"hs1.k":"Interior gardens","hs1.p":"Three interior gardens bring light and green into every level of the house.","hs2.k":"Space detail","hs2.p":"Spacious living room with an accent wall, artwork and a direct view of the garden. Three levels, with a basement bar and family room.",
+"f1.h":"Your logo in the tour","f1.p":"On the floor of every scene and on the tour cover. Whoever opens it knows whose it is.","f2.h":"The details of your space","f2.p":"Info points about materials, equipment, views, menu or services, right where the visitor looks.",
+"f3.h":"Icons in your brand style","f3.p":"Buttons and markers with your identity, so the tour feels like yours.","f4.h":"Exclusively yours","f4.p":"Your contact, your link and your brand. The tour works only for your business.",
+"work.eyebrow":"Projects","work.h2":"Walk through what we've made","c1.h":"A full penthouse in 44 scenes","c1.p":"For a Rent-A-House agent. Several levels, a terrace with a view, pool and parking, all connected in one tour. Buyers understand the property before they call.",
+"tag.res":"Residential","tag.scenes":"scenes","cta.walk":"Walk the tour","ba.during":"PHASE 1","ba.before":"BEFORE","c2.h":"The same space, before and during construction",
+"c2.p":"The office's main area from the same camera point: on the right how it was, on the left the first remodeling phase. Slide to compare. The owner follows the work without traveling.",
+"tag.office":"Offices","tag.phases":"2 phases","c3.h":"An underwater museum, open to everyone","c3.p":"21 underwater scenes of the Underwater Museum of Art. Non-divers can explore it too.","tag.tour":"Tourism",
+"c4.h":"It looked like a small gym. It wasn't.","c4.p":"20 scenes: training floor, café and dance studio. New members now know everything before they arrive.","cta.all":"See all 21 projects",
+"svc.eyebrow":"What's included","svc.h2":"Everything your space needs to be visited online","s1.h":"Full virtual tour","s1.p":"Connected scenes, smooth navigation and your contact inside the tour.",
+"s2.h":"Customized with your brand","s2.p":"Your logo, info points with the details of the space and icons in your style.","s3.h":"Google Maps & Street View","s3.p":"Your tour on your Google profile, where people are already looking for you.",
+"s4.h":"Vertical reel","s4.p":"A short video walking through the space, produced for social media.","s5.h":"Web & virtual reality","s5.p":"Embed it on your site, share it by link or view it with VR headsets.",
+"s6.h":"Hosting included","s6.p":"Your tour online and ready to share for the agreed period.","proc.eyebrow":"How we work","proc.h2":"From your door to your website, in four steps",
+"st1.t":"First contact","st1.h":"We talk","st1.p":"Tell us about the space and your goal. We give you a fixed price.","st2.t":"On site","st2.h":"We shoot","st2.p":"We visit with a 360 camera and capture a scene every few meters.",
+"st3.t":"Production","st3.h":"We edit and customize","st3.p":"We connect scenes and add your brand, the space's details and your contact.","st4.t":"Delivery","st4.h":"You publish","st4.p":"You get the link, the reel and the embed code. Ready to share.",
+"proc.note":"A standard space is usually ready in about 72 hours. Timing depends on the scope of the tour: large projects or tours with many scenes take longer.",
+"team.eyebrow":"Team","team.h2":"Two co-founders, two countries, one standard","team.photo":"Photo","t1.role":"Co-founder · Audiovisual producer","t1.p":"Leads TUR's audiovisual production and the projects in Costa Rica.",
+"t2.role":"Co-founder · Architect","t2.p":"Leads capture and the projects in Venezuela.","faq.h2":"Frequently asked questions",
+"q1":"Does the client need to install anything?","a1":"No. The tour opens in any browser, on phone or computer, from a link.",
+"q2":"How much does a tour cost?","a2":"It depends on the size of the space and the number of scenes. Send us the approximate square meters and location and we'll send you a fixed price.",
+"q5":"How long does delivery take?","a5":"A standard space is usually ready in about 72 hours. It depends on the scope of the tour: large projects or tours with many scenes take longer.",
+"q3":"Do you work outside Caracas?","a3":"Yes. We travel to any city in Venezuela and anywhere in Costa Rica. For other countries, write to us.",
+"q4":"How is it different from a video?","a4":"In a video you see what someone else chose to show you. In a tour you decide where to look, come back whenever you want and share it with whoever decides with you.",
+"ct.eyebrow":"Contact","cta.h2":"Which space do you want to open to the world?","cta.p":"Tell us what you have and we'll reply by email with a proposal and a sample tour similar to yours.",
+"fm.name":"Name","fm.email":"Email","fm.phone":"Phone (optional)","fm.city":"City and country","fm.type":"Type of space","fm.msg":"Tell us about your space","fm.ph":"Approximate size, what you want to achieve, dates...","fm.send":"Send request",
+"op.1":"Real estate","op.2":"Hotel, inn or vacation rental","op.3":"Café or small business","op.4":"Gym or academy","op.5":"Office or construction","op.6":"Tourism and culture","op.7":"Other",
+"msg.sending":"Sending…","msg.ok":"Request received. We'll reply to your email shortly.","msg.req":"Please fill in your name and a valid email.","msg.err":"We couldn't send it from here. Copy your message and send it to","msg.copy":"Copy message","msg.copied":"Copied",
+"foot.def":"TUR: a planned trip or excursion to get to know one or several places.",
+"c0.h":"A three-level house, walked end to end","c0.p":"For the sale of a house in Los Naranjos del Cafetal. 54 scenes: façade, living room, interior gardens, bedrooms and a basement bar, all connected in a single tour. Buyers arrive at the visit knowing what they want to see.","cta.play":"Walk the tour here","cta.full":"Walk the full tour","pano.drag":"Drag to look around","pano.go":"Walk the full tour","br.real":"Real case: Quinta Los Naranjos, El Cafetal.","br.walk":"Walk it below ↓"},
+pt:{"nav.work":"Projetos","nav.ind":"Setores","nav.brand":"Personalização","nav.proc":"Processo","nav.team":"Equipe","cta.quote":"Peça um orçamento","cta.work":"Ver projetos",
+"hero.eyebrow":"Tours virtuais 360 · Venezuela e Costa Rica","hero.h1":"Deixe que visitem <em>antes de abrir a porta.</em>",
+"hero.lead":"Tours 360 para vender, alugar e lotar espaços. Seu cliente percorre o lugar pelo celular, de onde estiver, e fala com você quando já gostou.",
+"hud.drag":"Arraste em qualquer direção","scene.0":"Cobertura · Caracas","scene.1":"Frente ao mar · Camurí","logos.label":"Marcas que já podem ser percorridas com a TUR",
+"stat.views":"visualizações nos nossos tours","stat.spaces":"espaços digitalizados","stat.scenes":"cenas em um único tour","stat.countries":"países: Venezuela, Costa Rica e México",
+"why.eyebrow":"Por que a TUR","why.h2":"Não vendemos fotos 360. <em>Vendemos visitas que já decidiram.</em>","why.p":"As plataformas vendem uma câmera e as agências de luxo cobram como agências de luxo. Nós capturamos, produzimos e personalizamos cada tour para que seu espaço venda.",
+"p1.h":"Produção profissional","p1.p":"Captura 360 e produção audiovisual de uma equipe que vem do cinema e da arquitetura. Cada cena mostra o espaço como ele merece.",
+"p2.h":"Feito para vender","p2.p":"Seu contato dentro do tour, publicação no Google Maps e um reel vertical pronto para as redes.",
+"p3.h":"Entrega rápida","p3.p":"Um espaço padrão fica pronto em cerca de 72 horas. Projetos grandes levam mais tempo, conforme o porte.",
+"ind.eyebrow":"Para quem","ind.h2":"Um tour diferente para cada negócio","i1.k":"Imobiliário","i1.h":"Venda para compradores que estão longe","i1.p":"Corretores, imobiliárias e incorporadoras. O comprador percorre o imóvel antes de ligar.",
+"i2.k":"Hotelaria","i2.h":"Hóspedes sem surpresas","i2.p":"Hotéis, pousadas e aluguel por temporada. Mais reservas, menos perguntas.",
+"i6.k":"Cafés e empreendimentos","i6.h":"Seu espaço, aberto no seu site","i6.p":"Cafés, lojas e negócios que querem mostrar seu espaço em 360 no site e no Google.",
+"i3.k":"Fitness e academias","i3.h":"Que conheçam seu box antes de ir","i3.p":"Academias de ginástica, de artes marciais e estúdios.","i4.k":"Obras e escritórios","i4.h":"Documente cada fase","i4.p":"O dono percorre a obra de onde estiver.",
+"i5.k":"Turismo e cultura","i5.h":"Leve seu destino ao mundo","i5.p":"Museus, atrações e operadores de turismo.",
+"br.eyebrow":"Personalização e exclusividade","br.h2":"Seu tour, <em>com a sua marca.</em>","br.p":"Sem modelos prontos. Cada tour leva sua identidade e conta os detalhes que tornam seu espaço único. Toque nos pontos da imagem.",
+"hs1.k":"Jardins internos","hs1.p":"Três jardins internos que enchem de luz e verde cada nível da casa.","hs2.k":"Detalhe do espaço","hs2.p":"Sala ampla com parede de destaque, obras de arte e vista direta para o jardim. Três níveis, com porão de bar e sala de família.",
+"f1.h":"Seu logo no tour","f1.p":"No piso de cada cena e na capa do tour. Quem abre sabe de quem é.","f2.h":"Os detalhes do seu espaço","f2.p":"Pontos de informação sobre materiais, equipamentos, vistas, cardápio ou serviços, onde o visitante olha.",
+"f3.h":"Ícones no estilo da sua marca","f3.p":"Botões e sinais com sua identidade para que o tour pareça seu.","f4.h":"Exclusivo para você","f4.p":"Seu contato, seu link e sua marca. O tour trabalha só para o seu negócio.",
+"work.eyebrow":"Projetos","work.h2":"Percorra o que já fizemos","c1.h":"Uma cobertura inteira em 44 cenas","c1.p":"Para uma corretora da Rent-A-House. Vários níveis, terraço com vista, piscina e garagem, tudo conectado em um só tour. O comprador entende o imóvel antes de ligar.",
+"tag.res":"Residencial","tag.scenes":"cenas","cta.walk":"Percorrer o tour","ba.during":"FASE 1","ba.before":"ANTES","c2.h":"O mesmo espaço, antes e durante a obra",
+"c2.p":"A área principal do escritório, do mesmo ponto de câmera: à direita como era, à esquerda a primeira fase da reforma. Deslize para comparar. O proprietário acompanha a obra sem viajar.",
+"tag.office":"Escritórios","tag.phases":"2 fases","c3.h":"Um museu debaixo d'água, aberto a todos","c3.p":"21 cenas submarinas do Museu Subaquático de Arte. Quem não mergulha também pode percorrê-lo.","tag.tour":"Turismo",
+"c4.h":"Parecia uma academia pequena. Não era.","c4.p":"20 cenas: área de treino, café e sala de dança. Agora um novo aluno conhece tudo antes de ir.","cta.all":"Ver os 21 projetos",
+"svc.eyebrow":"O que inclui","svc.h2":"Tudo o que seu espaço precisa para ser visitado online","s1.h":"Tour virtual completo","s1.p":"Cenas conectadas, navegação fluida e seu contato dentro do tour.",
+"s2.h":"Personalizado com sua marca","s2.p":"Seu logo, pontos de informação com os detalhes do espaço e ícones no seu estilo.","s3.h":"Google Maps e Street View","s3.p":"Seu tour no seu perfil do Google, onde as pessoas já procuram você.",
+"s4.h":"Reel vertical","s4.p":"Um vídeo curto percorrendo o espaço, produzido para as redes.","s5.h":"Web e realidade virtual","s5.p":"Incorpore no seu site, compartilhe por link ou veja com óculos de realidade virtual.",
+"s6.h":"Hospedagem incluída","s6.p":"Seu tour online e pronto para compartilhar pelo período combinado.","proc.eyebrow":"Como trabalhamos","proc.h2":"Da sua porta ao seu site, em quatro passos",
+"st1.t":"Primeiro contato","st1.h":"Conversamos","st1.p":"Você conta qual é o espaço e o objetivo. Damos um preço fechado.","st2.t":"No local","st2.h":"Capturamos","st2.p":"Vamos com câmera 360 e fazemos uma cena a cada poucos metros.",
+"st3.t":"Produção","st3.h":"Editamos e personalizamos","st3.p":"Conectamos as cenas e adicionamos sua marca, os detalhes do espaço e seu contato.","st4.t":"Entrega","st4.h":"Você publica","st4.p":"Você recebe o link, o reel e o código para o seu site. Pronto para compartilhar.",
+"proc.note":"Um espaço padrão costuma ficar pronto em cerca de 72 horas. O prazo depende do porte do tour: projetos grandes ou com muitas cenas levam mais tempo.",
+"team.eyebrow":"Equipe","team.h2":"Dois cofundadores, dois países, o mesmo padrão","team.photo":"Foto","t1.role":"Cofundador · Produtor audiovisual","t1.p":"Lidera a produção audiovisual da TUR e os projetos na Costa Rica.",
+"t2.role":"Cofundador · Arquiteto","t2.p":"Lidera a captura e os projetos na Venezuela.","faq.h2":"Perguntas frequentes",
+"q1":"O cliente precisa instalar algo?","a1":"Não. O tour abre em qualquer navegador, no celular ou no computador, com um link.",
+"q2":"Quanto custa um tour?","a2":"Depende do tamanho do espaço e do número de cenas. Envie os metros quadrados aproximados e a localização e mandamos um preço fechado.",
+"q5":"Quanto tempo leva a entrega?","a5":"Um espaço padrão costuma ficar pronto em cerca de 72 horas. Depende do porte do tour: projetos grandes ou com muitas cenas levam mais tempo.",
+"q3":"Vocês trabalham fora de Caracas?","a3":"Sim. Viajamos para qualquer cidade da Venezuela e qualquer lugar da Costa Rica. Para outros países, fale com a gente.",
+"q4":"Qual a diferença para um vídeo?","a4":"No vídeo você vê o que outra pessoa escolheu mostrar. No tour você decide para onde olhar, volta quando quiser e compartilha com quem decide com você.",
+"ct.eyebrow":"Contato","cta.h2":"Que espaço você quer abrir para o mundo?","cta.p":"Conte o que você tem e respondemos por e-mail com uma proposta e um tour de exemplo parecido com o seu.",
+"fm.name":"Nome","fm.email":"E-mail","fm.phone":"Telefone (opcional)","fm.city":"Cidade e país","fm.type":"Tipo de espaço","fm.msg":"Conte sobre seu espaço","fm.ph":"Metragem aproximada, o que quer alcançar, datas...","fm.send":"Enviar solicitação",
+"op.1":"Imobiliário","op.2":"Hotel, pousada ou aluguel por temporada","op.3":"Café ou empreendimento","op.4":"Academia","op.5":"Escritório ou obra","op.6":"Turismo e cultura","op.7":"Outro",
+"msg.sending":"Enviando…","msg.ok":"Solicitação recebida. Responderemos no seu e-mail em breve.","msg.req":"Preencha seu nome e um e-mail válido.","msg.err":"Não conseguimos enviar daqui. Copie sua mensagem e envie para","msg.copy":"Copiar mensagem","msg.copied":"Copiado",
+"foot.def":"TUR: viagem ou excursão planejada para conhecer um ou vários lugares.",
+"c0.h":"Uma casa de três níveis, percorrida de ponta a ponta","c0.p":"Para a venda de uma casa em Los Naranjos del Cafetal. 54 cenas: fachada, sala, jardins internos, quartos e porão com bar, conectados em um só tour. O comprador chega à visita sabendo o que quer ver.","cta.play":"Percorrer o tour aqui","cta.full":"Percorrer o tour completo","pano.drag":"Arraste para olhar","pano.go":"Percorrer completo","br.real":"Caso real: Quinta Los Naranjos, El Cafetal.","br.walk":"Percorra abaixo ↓"},
+zh:{"nav.work":"项目","nav.ind":"行业","nav.brand":"品牌定制","nav.proc":"流程","nav.team":"团队","cta.quote":"获取报价","cta.work":"查看项目",
+"hero.eyebrow":"360° 虚拟导览 · 委内瑞拉与哥斯达黎加","hero.h1":"让客户<em>在开门之前</em>就先参观。",
+"hero.lead":"360° 虚拟导览，帮助您出售、出租和吸引客流。客户无论身在何处，都能用手机走遍整个空间，喜欢之后再联系您。",
+"hud.drag":"可向任意方向拖动","scene.0":"顶层公寓 · 加拉加斯","scene.1":"海景公寓 · 卡穆里","logos.label":"已可通过 TUR 在线参观的品牌",
+"stat.views":"次导览浏览","stat.spaces":"个已数字化的空间","stat.scenes":"个场景组成一个导览","stat.countries":"个国家：委内瑞拉、哥斯达黎加和墨西哥",
+"why.eyebrow":"为什么选择 TUR","why.h2":"我们卖的不是 360° 照片，<em>而是已经下定决心的到访。</em>","why.p":"平台卖给您相机，奢华代理按奢华价格收费。我们负责拍摄、制作并定制每一个导览，让您的空间更好成交。",
+"p1.h":"专业制作","p1.p":"由具有电影与建筑背景的团队完成 360° 拍摄和视听制作，每个场景都呈现空间应有的样子。",
+"p2.h":"为成交而做","p2.p":"导览内嵌您的联系方式，发布到谷歌地图，并附一条可直接发布到社交媒体的竖版短视频。",
+"p3.h":"快速交付","p3.p":"标准空间约 72 小时即可完成。大型项目视规模需要更长时间。",
+"ind.eyebrow":"适用对象","ind.h2":"每种生意，都有专属的导览","i1.k":"房地产","i1.h":"把房子卖给远方的买家","i1.p":"经纪人、中介与开发商。买家致电前就已看完房源。",
+"i2.k":"酒店住宿","i2.h":"让住客没有意外","i2.p":"酒店、民宿与度假租赁。预订更多，咨询更少。",
+"i6.k":"咖啡馆与创业小店","i6.h":"让您的店在官网上开门迎客","i6.p":"希望在自己网站和谷歌上以 360° 展示空间的咖啡馆、商店和企业。",
+"i3.k":"健身与武馆","i3.h":"让会员到店前就熟悉场馆","i3.p":"健身房、武术学院与工作室。","i4.k":"工程与办公","i4.h":"记录每个施工阶段","i4.p":"业主身在何处都能巡视工地。",
+"i5.k":"旅游与文化","i5.h":"把您的目的地带给全世界","i5.p":"博物馆、景点与旅游运营商。",
+"br.eyebrow":"品牌定制与专属","br.h2":"您的导览，<em>您的品牌。</em>","br.p":"不使用模板。每个导览都带有您的品牌形象，并讲述让您的空间与众不同的细节。点击图片上的圆点试试。",
+"hs1.k":"室内花园","hs1.p":"三个室内花园为住宅的每一层带来光线与绿意。","hs2.k":"空间细节","hs2.p":"宽敞的客厅，配有主题墙、艺术品，直接面向花园。共三层，地下室设有吧台和家庭活动室。",
+"f1.h":"导览中的您的标志","f1.p":"显示在每个场景的地面和导览封面上，打开的人一眼就知道是谁的空间。","f2.h":"您空间的细节","f2.p":"在访客注视的位置展示材料、设备、景观、菜单或服务等信息点。",
+"f3.h":"品牌风格的图标","f3.p":"按钮和标识采用您的品牌形象，让导览更有归属感。","f4.h":"专属于您","f4.p":"您的联系方式、您的链接、您的品牌。导览只为您的生意服务。",
+"work.eyebrow":"项目","work.h2":"走进我们的作品","c1.h":"44 个场景，完整呈现一套顶层公寓","c1.p":"为 Rent-A-House 的经纪人制作。多层空间、观景露台、泳池和停车场，全部串联在一个导览中。买家致电前就已了解房源。",
+"tag.res":"住宅","tag.scenes":"个场景","cta.walk":"进入导览","ba.during":"第一阶段","ba.before":"改造前","c2.h":"同一空间，改造前与施工中",
+"c2.p":"办公室主区域，相同机位：右侧是原貌，左侧是第一阶段改造。拖动即可对比。业主无需出差即可跟进施工。",
+"tag.office":"办公","tag.phases":"2 个阶段","c3.h":"一座向所有人开放的水下博物馆","c3.p":"水下艺术博物馆的 21 个水下场景。不会潜水的人也能参观。","tag.tour":"旅游",
+"c4.h":"看起来像小健身房，其实不然。","c4.p":"20 个场景：训练区、咖啡厅和舞蹈室。新会员到店前就已了解一切。","cta.all":"查看全部 21 个项目",
+"svc.eyebrow":"服务内容","svc.h2":"让您的空间被在线参观所需的一切","s1.h":"完整虚拟导览","s1.p":"场景相互连接，浏览流畅，导览中显示您的联系方式。",
+"s2.h":"品牌定制","s2.p":"您的标志、介绍空间细节的信息点，以及符合您风格的图标。","s3.h":"谷歌地图与街景","s3.p":"把导览放到您的谷歌商家资料上，客户本来就在那里搜索您。",
+"s4.h":"竖版短视频","s4.p":"一段漫游空间的短视频，专为社交媒体制作。","s5.h":"网站与虚拟现实","s5.p":"嵌入您的网站、通过链接分享，或用 VR 眼镜观看。",
+"s6.h":"含托管服务","s6.p":"导览在约定期限内在线，随时可以分享。","proc.eyebrow":"工作流程","proc.h2":"四个步骤，从您的门口到您的网站",
+"st1.t":"初次沟通","st1.h":"沟通","st1.p":"告诉我们空间情况和目标，我们给出固定报价。","st2.t":"现场","st2.h":"拍摄","st2.p":"我们携带 360° 相机到现场，每隔几米拍摄一个场景。",
+"st3.t":"制作","st3.h":"编辑与定制","st3.p":"串联场景，加入您的品牌、空间细节和联系方式。","st4.t":"交付","st4.h":"发布","st4.p":"您将收到链接、短视频和网站嵌入代码，随时可以分享。",
+"proc.note":"标准空间通常约 72 小时完成。具体时间取决于导览规模：大型项目或场景较多的导览需要更长时间。",
+"team.eyebrow":"团队","team.h2":"两位联合创始人，两个国家，同一标准","team.photo":"照片","t1.role":"联合创始人 · 视听制作人","t1.p":"负责 TUR 的视听制作以及哥斯达黎加的项目。",
+"t2.role":"联合创始人 · 建筑师","t2.p":"负责委内瑞拉的拍摄与项目。","faq.h2":"常见问题",
+"q1":"客户需要安装什么吗？","a1":"不需要。导览通过链接即可在任何浏览器中打开，手机和电脑都可以。",
+"q2":"一个导览多少钱？","a2":"取决于空间大小和场景数量。告诉我们大致面积和地点，我们会给您固定报价。",
+"q5":"交付需要多久？","a5":"标准空间通常约 72 小时完成。具体取决于导览规模：大型项目或场景较多的导览需要更长时间。",
+"q3":"你们在加拉加斯以外的地方工作吗？","a3":"是的。我们可以前往委内瑞拉的任何城市以及哥斯达黎加的任何地方。其他国家欢迎来信咨询。",
+"q4":"和视频有什么不同？","a4":"视频里您看到的是别人选择给您看的内容。导览里您自己决定看哪里，可以随时回来，并分享给一起做决定的人。",
+"ct.eyebrow":"联系","cta.h2":"您想把哪个空间展示给全世界？","cta.p":"告诉我们您的空间，我们会通过电子邮件回复方案和一个类似的示例导览。",
+"fm.name":"姓名","fm.email":"电子邮件","fm.phone":"电话（选填）","fm.city":"城市和国家","fm.type":"空间类型","fm.msg":"介绍一下您的空间","fm.ph":"大致面积、希望达到的目标、日期……","fm.send":"提交需求",
+"op.1":"房地产","op.2":"酒店、民宿或度假租赁","op.3":"咖啡馆或创业小店","op.4":"健身房或武馆","op.5":"办公室或工程","op.6":"旅游与文化","op.7":"其他",
+"msg.sending":"发送中…","msg.ok":"已收到您的需求，我们会尽快通过电子邮件回复。","msg.req":"请填写姓名和有效的电子邮件。","msg.err":"无法从此处发送。请复制您的信息并发送至","msg.copy":"复制信息","msg.copied":"已复制",
+"foot.def":"TUR：为了解一个或多个地方而规划的旅行或游览。",
+"c0.h":"一栋三层住宅，从头到尾完整呈现","c0.p":"为 Los Naranjos del Cafetal 一栋住宅的出售而制作。54 个场景：外立面、客厅、室内花园、卧室以及带吧台的地下室，全部连接在一个导览中。买家到场前就已知道想看什么。","cta.play":"在此进入导览","cta.full":"进入完整导览","pano.drag":"拖动即可环视","pano.go":"进入完整导览","br.real":"真实案例：El Cafetal 的 Los Naranjos 住宅。","br.walk":"在下方浏览 ↓"}
+};
+const MSG_ES={"msg.sending":"Enviando…","msg.ok":"Recibimos tu solicitud. Te responderemos por correo muy pronto.","msg.req":"Escribe tu nombre y un correo válido.","msg.err":"No pudimos enviarla desde aquí. Copia tu mensaje y envíalo a","msg.copy":"Copiar mensaje","msg.copied":"Copiado","hs2.k":"Detalle del espacio","hs2.p":"Sala amplia con pared de acento, obras de arte y vista directa al jardín. Tres niveles, con sótano de bar y family room."};
+const ES = Object.assign({}, MSG_ES);
+document.querySelectorAll("[data-i18n]").forEach(el => { ES[el.dataset.i18n] = el.hasAttribute("data-html") ? el.innerHTML : el.textContent; });
+document.querySelectorAll("[data-i18n-ph]").forEach(el => { ES[el.dataset.i18nPh] = el.placeholder; });
+I18N.es = ES;
+let LANG = "es";
+const t = k => (I18N[LANG] && I18N[LANG][k]) ?? ES[k] ?? "";
+function setLang(l){
+  LANG = I18N[l] ? l : "es";
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = t(el.dataset.i18n); if (!v) return;
+    if (el.hasAttribute("data-html")) el.innerHTML = v; else el.textContent = v;
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  try { localStorage.setItem("tur-lang", LANG); } catch(e) {}
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
+let start = "es";
+try { start = localStorage.getItem("tur-lang") || start; } catch(e) {}
+const hsh = (location.hash || "").slice(1); if (I18N[hsh]) start = hsh;
+if (start !== "es") setLang(start);
+
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FINE = matchMedia("(pointer: fine)").matches;
+
+/* ---------- cursor ---------- */
+(function(){
+  if (!FINE) return;
+  document.documentElement.classList.add("has-cursor");
+  const dot = document.querySelector(".cur-dot"), ring = document.querySelector(".cur-ring");
+  let x = innerWidth/2, y = innerHeight/2, rx = x, ry = y;
+  addEventListener("pointermove", e => { x = e.clientX; y = e.clientY; dot.style.transform = `translate(${x}px,${y}px)`; }, {passive:true});
+  (function loop(){ rx += (x-rx)*.18; ry += (y-ry)*.18; ring.style.transform = `translate(${rx}px,${ry}px)`; requestAnimationFrame(loop); })();
+  document.addEventListener("pointerover", e => {
+    const v = e.target.closest(".viewer"), h = e.target.closest("a,button,summary,.hs,select,input[type=range],.lg");
+    const txt = e.target.closest("input:not([type=range]),textarea");
+    ring.classList.toggle("drag", !!v && !h);
+    ring.classList.toggle("hover", !!h);
+    ring.style.opacity = txt ? 0 : ""; dot.style.opacity = txt ? 0 : "";
+  });
+  document.addEventListener("pointerleave", () => { ring.style.opacity = 0; dot.style.opacity = 0; });
+  document.addEventListener("pointerenter", () => { ring.style.opacity = ""; dot.style.opacity = ""; });
+})();
+
+/* ---------- 360 viewer (three.js) ---------- */
+(function(){
+  const host = document.getElementById("viewer"), fade = document.getElementById("fade");
+  const needle = document.getElementById("needle"), hd = document.getElementById("heading"), pt = document.getElementById("pitch");
+  const SCENES = [{src:"img/eq_sala.jpg", lon:200, lat:-4}, {src:"img/eq_mira.jpg", lon:235, lat:-6}];
+  let lon = SCENES[0].lon, lat = SCENES[0].lat, fov = 75, vlon = 0, vlat = 0, drag = false, px = 0, py = 0, idle = 0;
+  function hud(){ const d = ((lon % 360) + 360) % 360; hd.textContent = String(Math.round(d)).padStart(3,"0") + "°"; pt.textContent = (lat>=0?"+":"−") + String(Math.abs(Math.round(lat))).padStart(2,"0") + "°"; needle.setAttribute("transform","rotate(" + d.toFixed(1) + " 20 20)"); }
+  let ok = !!window.THREE;
+  let renderer, scene, camera, mesh, loader;
+  if (ok) {
+    try {
+      renderer = new THREE.WebGLRenderer({antialias:true});
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      host.insertBefore(renderer.domElement, fade);
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(fov, 1, 1, 1100);
+      const geo = new THREE.SphereGeometry(500, 64, 40); geo.scale(-1, 1, 1);
+      mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:0x111111}));
+      scene.add(mesh);
+      loader = new THREE.TextureLoader();
+      host.style.backgroundImage = "none";
+    } catch(e) { ok = false; }
+  }
+  function load(i){
+    const s = SCENES[i];
+    document.querySelectorAll(".scenes [data-scene]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.scene === i)));
+    if (!ok) return;
+    fade.classList.add("on");
+    loader.load(s.src, tex => {
+      tex.encoding = THREE.sRGBEncoding; tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      setTimeout(() => { mesh.material.dispose(); mesh.material = new THREE.MeshBasicMaterial({map:tex}); lon = s.lon; lat = s.lat; fade.classList.remove("on"); }, 250);
+    });
+  }
+  function size(){ if (!ok) return; const w = host.clientWidth, h = host.clientHeight; renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix(); }
+  addEventListener("resize", size);
+  host.addEventListener("pointerdown", e => { drag = true; px = e.clientX; py = e.clientY; vlon = vlat = 0; idle = 0; host.setPointerCapture(e.pointerId); });
+  host.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const k = .12 * fov / 75, dx = e.clientX - px, dy = e.clientY - py;
+    lon -= dx * k; lat += dy * k; vlon = -dx * k; vlat = dy * k; px = e.clientX; py = e.clientY;
+  });
+  const up = () => { drag = false; idle = 0; };
+  host.addEventListener("pointerup", up); host.addEventListener("pointercancel", up);
+  host.addEventListener("keydown", e => {
+    const m = {ArrowLeft:[-6,0],ArrowRight:[6,0],ArrowUp:[0,5],ArrowDown:[0,-5]}[e.key];
+    if (m) { lon += m[0]; lat += m[1]; idle = 0; e.preventDefault(); }
+  });
+  const zoom = d => { fov = Math.max(35, Math.min(95, fov + d)); if (ok) { camera.fov = fov; camera.updateProjectionMatrix(); } idle = 0; };
+  document.getElementById("zin").addEventListener("click", () => zoom(-10));
+  document.getElementById("zout").addEventListener("click", () => zoom(10));
+  host.addEventListener("wheel", e => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); zoom(e.deltaY > 0 ? 5 : -5); } }, {passive:false});
+  document.querySelectorAll(".scenes [data-scene]").forEach(b => b.addEventListener("click", () => load(+b.dataset.scene)));
+  let visible = true;
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(host);
+  function frame(){
+    requestAnimationFrame(frame);
+    if (!visible) return;
+    if (!drag) {
+      if (Math.abs(vlon) + Math.abs(vlat) > .01) { lon += vlon; lat += vlat; vlon *= .93; vlat *= .93; }
+      else if (!REDUCE && ++idle > 180) { lon += .04; lat += (-4 - lat) * .005; }
+    }
+    lat = Math.max(-85, Math.min(85, lat));
+    hud();
+    if (!ok) { host.style.backgroundPositionX = (-lon/360 * host.clientHeight * (4096/764)) + "px"; return; }
+    const phi = THREE.MathUtils.degToRad(90 - lat), th = THREE.MathUtils.degToRad(lon);
+    camera.lookAt(500*Math.sin(phi)*Math.cos(th), 500*Math.cos(phi), 500*Math.sin(phi)*Math.sin(th));
+    renderer.render(scene, camera);
+  }
+  size(); load(0); frame();
+})();
+
+/* ---------- wireframe gems ---------- */
+function gem(id, kind){
+  const el = document.getElementById(id); if (!el || !window.THREE) return;
+  let r; try { r = new THREE.WebGLRenderer({antialias:true, alpha:true}); } catch(e) { return; }
+  r.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); el.appendChild(r.domElement);
+  const s = new THREE.Scene(), c = new THREE.PerspectiveCamera(40, 1, .1, 50); c.position.z = 5.2;
+  const g = kind === "oct" ? new THREE.OctahedronGeometry(1.5, 0) : new THREE.IcosahedronGeometry(1.45, 0);
+  const lines = new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({color:0xFFBD59, transparent:true, opacity:.9}));
+  const inner = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(.7, 0)), new THREE.LineBasicMaterial({color:0xFFF8DE, transparent:true, opacity:.25}));
+  s.add(lines, inner);
+  let mx = 0, my = 0, vis = false;
+  addEventListener("pointermove", e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, {passive:true});
+  new IntersectionObserver(es => vis = es[0].isIntersecting).observe(el);
+  function sz(){ const w = el.clientWidth, h = el.clientHeight; r.setSize(w, h, false); c.aspect = w/h; c.updateProjectionMatrix(); }
+  addEventListener("resize", sz); sz();
+  (function loop(t){
+    requestAnimationFrame(loop); if (!vis) return;
+    const sp = REDUCE ? 0 : .00025;
+    lines.rotation.y = t*sp + mx*.9; lines.rotation.x = t*sp*.6 + my*.9;
+    inner.rotation.y = -t*sp*1.4; inner.rotation.z = t*sp;
+    r.render(s, c);
+  })(0);
+}
+gem("gem1","ico"); gem("gem2","oct");
+
+/* ---------- orbit ring parallax ---------- */
+addEventListener("pointermove", e => {
+  const mx = e.clientX / innerWidth - .5, my = e.clientY / innerHeight - .5;
+  document.querySelectorAll("[data-orbit] svg").forEach(s => { s.style.setProperty("--rx", (58 + my*16) + "deg"); s.style.setProperty("--ry", (mx*22) + "deg"); });
+}, {passive:true});
+
+/* ---------- 3D tilt ---------- */
+if (FINE && !REDUCE) document.querySelectorAll("[data-tilt]").forEach(el => {
+  el.addEventListener("pointermove", e => {
+    const b = el.getBoundingClientRect(), x = (e.clientX - b.left)/b.width - .5, y = (e.clientY - b.top)/b.height - .5;
+    el.style.transform = `perspective(1000px) rotateY(${x*7}deg) rotateX(${-y*7}deg) translateZ(6px)`;
+  });
+  el.addEventListener("pointerleave", () => el.style.transform = "");
+});
+
+/* ---------- dots spotlight ---------- */
+(function(){
+  const w = document.getElementById("svcwrap"), d = w.querySelector(".dots");
+  w.addEventListener("pointermove", e => { const b = w.getBoundingClientRect(); d.style.setProperty("--mx", (e.clientX-b.left)+"px"); d.style.setProperty("--my", (e.clientY-b.top)+"px"); });
+})();
+
+/* ---------- hotspots demo ---------- */
+(function(){
+  const card = document.getElementById("hs-card");
+  document.querySelectorAll(".hs").forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.card;
+    card.style.left = b.style.left; card.style.top = b.style.top;
+    card.querySelector("b").textContent = t(k + ".k"); card.querySelector("span").textContent = t(k + ".p");
+    card.querySelector("b").dataset.i18n = k + ".k"; card.querySelector("span").dataset.i18n = k + ".p";
+  }));
+})();
+
+/* ---------- case 360 viewers ---------- */
+(function(){
+  const els = document.querySelectorAll(".pano[data-eq]");
+  if (!window.THREE) return;
+  els.forEach(el => {
+    let r, cam, scn, mesh, on = false, vis = false, drag = false, px = 0, py = 0, vlon = 0, vlat = 0, idle = 999;
+    let lon = +el.dataset.lon || 0, lat = +el.dataset.lat || 0;
+    const band = +el.dataset.band || 180, vf = 62;
+    function init(){
+      on = true;
+      try { r = new THREE.WebGLRenderer({antialias:true}); } catch(e) { return; }
+      r.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); r.outputEncoding = THREE.sRGBEncoding;
+      el.insertBefore(r.domElement, el.querySelector(".pbadge"));
+      scn = new THREE.Scene(); cam = new THREE.PerspectiveCamera(vf, 1, 1, 1100);
+      const t0 = THREE.MathUtils.degToRad(90 - band/2), tl = THREE.MathUtils.degToRad(band);
+      const geo = new THREE.SphereGeometry(500, 64, 32, 0, Math.PI*2, t0, tl); geo.scale(-1, 1, 1);
+      mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:0x0b0a09})); scn.add(mesh);
+      new THREE.TextureLoader().load(el.dataset.eq, tex => { tex.encoding = THREE.sRGBEncoding; tex.anisotropy = r.capabilities.getMaxAnisotropy(); mesh.material = new THREE.MeshBasicMaterial({map:tex}); el.classList.add("ready"); });
+      size(); addEventListener("resize", size); loop();
+    }
+    function size(){ const w = el.clientWidth, h = el.clientHeight; r.setSize(w, h, false); cam.aspect = w/h; cam.updateProjectionMatrix(); }
+    function lim(){ const m = Math.max(0, band/2 - vf/2 - 1); return Math.min(85, m); }
+    function loop(){
+      requestAnimationFrame(loop); if (!vis) return;
+      if (!drag) { if (Math.abs(vlon)+Math.abs(vlat) > .01) { lon += vlon; lat += vlat; vlon *= .93; vlat *= .93; } else if (!REDUCE && ++idle > 120) lon += .05; }
+      const L = lim(); lat = Math.max(-L, Math.min(L, lat));
+      const phi = THREE.MathUtils.degToRad(90 - lat), th = THREE.MathUtils.degToRad(lon);
+      cam.lookAt(500*Math.sin(phi)*Math.cos(th), 500*Math.cos(phi), 500*Math.sin(phi)*Math.sin(th));
+      r.render(scn, cam);
+    }
+    new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis && !on) init(); }, {rootMargin:"200px"}).observe(el);
+    el.addEventListener("pointerdown", e => { if (e.target.closest(".pgo")) return; drag = true; px = e.clientX; py = e.clientY; vlon = vlat = 0; idle = 0; el.classList.add("drag","used"); el.setPointerCapture(e.pointerId); });
+    el.addEventListener("pointermove", e => { if (!drag) return; const dx = e.clientX - px, dy = e.clientY - py, k = .14; lon -= dx*k; lat += dy*k; vlon = -dx*k; vlat = dy*k; px = e.clientX; py = e.clientY; });
+    const up = () => { drag = false; idle = 0; el.classList.remove("drag"); };
+    el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
+  });
+})();
+
+/* ---------- before / after ---------- */
+(function(){
+  const ba = document.getElementById("ba"), r = document.getElementById("ba-range");
+  r.addEventListener("input", () => ba.style.setProperty("--x", r.value + "%"));
+})();
+
+/* ---------- logos marquee ---------- */
+(function(){
+  const m = document.getElementById("marquee"); if (REDUCE) return;
+  const n = m.children.length; m.innerHTML += m.innerHTML;
+  [...m.children].forEach((el,i) => { if (i >= n) el.setAttribute("aria-hidden","true"); });
+})();
+
+/* ---------- count up ---------- */
+(function(){
+  if (REDUCE) return;
+  const fmt = n => n.toLocaleString("es-VE");
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; io.unobserve(e.target);
+    const el = e.target, to = +el.dataset.count, t0 = performance.now();
+    (function step(now){ const p = Math.min(1, (now - t0)/1100), v = Math.round(to * (1 - Math.pow(1-p, 3))); el.textContent = fmt(v); if (p < 1) requestAnimationFrame(step); })(t0);
+  }), {threshold:.6});
+  document.querySelectorAll("[data-count]").forEach(el => io.observe(el));
+})();
+
+/* ---------- lead form → email ---------- */
+(function(){
+  const f = document.getElementById("lead"), st = document.getElementById("f-status"), btn = document.getElementById("f-send");
+  const val = id => document.getElementById(id).value.trim();
+  function show(cls, html){ st.className = "status " + cls; st.innerHTML = html; st.hidden = false; }
+  f.addEventListener("submit", async e => {
+    e.preventDefault();
+    if (val("f-honey")) return;
+    const data = {nombre:val("f-name"), correo:val("f-email"), telefono:val("f-phone"), ubicacion:val("f-city"), tipo:val("f-type"), mensaje:val("f-msg"), idioma:LANG};
+    if (!data.nombre || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.correo)) { show("err", t("msg.req")); return; }
+    btn.disabled = true; btn.textContent = t("msg.sending");
+    try {
+      const res = await fetch("https://formsubmit.co/ajax/" + LEAD_EMAIL, {
+        method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify(Object.assign({_subject:"Nueva solicitud TUR 360: " + data.tipo, _template:"table", _replyto:data.correo}, data))
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok || String(j.success) !== "true") throw new Error("send");
+      show("ok", t("msg.ok")); f.reset();
+    } catch(err) {
+      const text = Object.entries(data).map(([k,v]) => k + ": " + (v || "-")).join("\n");
+      show("err", `<span>${t("msg.err")} <b class="mail">${LEAD_EMAIL}</b></span><pre id="f-copytext"></pre><button type="button" class="btn" id="f-copy">${t("msg.copy")}</button>`);
+      document.getElementById("f-copytext").textContent = text;
+      document.getElementById("f-copy").addEventListener("click", ev => {
+        navigator.clipboard.writeText(text).then(() => ev.target.textContent = t("msg.copied")).catch(() => { const r = document.createRange(); r.selectNodeContents(document.getElementById("f-copytext")); getSelection().removeAllRanges(); getSelection().addRange(r); });
+      });
+    } finally { btn.disabled = false; btn.textContent = t("fm.send"); }
+  });
+})();
+</script>
+
+</body>
+</html>
